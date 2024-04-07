@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:onlinebookstore/UserPages/Profile.dart';
 import 'package:onlinebookstore/UserPages/ProfileUpdate.dart';
 import 'package:onlinebookstore/UserPages/UserHome.dart';
 
@@ -46,7 +47,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   void loadUserProfileData() async {
     if (loggedInUser != null) {
       final userData = await _firestore.collection('Customer').where('Email',
-         isEqualTo: loggedInUser!.email).get();
+          isEqualTo: loggedInUser!.email).get();
       if (userData.docs.isNotEmpty) {
         final userDoc = userData.docs.first;
         setState(() {
@@ -122,182 +123,187 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: const Text("User Profile Update",
-                style: TextStyle(color: Colors.white, fontSize: 20)),
-            backgroundColor: Colors.deepOrange),
-        body: Center(
-          child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/Images/img.png"),
-                      fit: BoxFit.cover)),
-              child: Form(key: _formKey,
-                child: isLoading
-                    ? const Center(
-                  child: CircularProgressIndicator(), // Show a loading indicator
-                )
-                    :Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 30.0),
-                  child: ListView(
-                          children: [
-                            Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 10.0),
-                                child: TextFormField(
-                                  autofocus: false,
-                                  controller: nameController,
-                                  cursorColor: Colors.white,
-                                  style: const TextStyle(
-                                      fontSize: 20.0, color: Colors.white),
-                                  onChanged: (value) => nameController.text = value,
-                                  decoration: const InputDecoration(
-                                    labelText: "Name",
-                                    labelStyle: TextStyle(
+    return SafeArea(
+        top: false,
+        child: Scaffold(
+            extendBody: true,
+            appBar: AppBar(
+                title: const Text("User Profile Update",
+                    style: TextStyle(color: Colors.white, fontSize: 20)),
+                backgroundColor: Colors.deepOrange),
+            body: Center(
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/Images/img2.png"),
+                          fit: BoxFit.cover)),
+                  child: Form(key: _formKey,
+                    child: isLoading
+                        ? const Center(
+                      child: CircularProgressIndicator(), // Show a loading indicator
+                    )
+                        :Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20.0, horizontal: 30.0),
+                        child: ListView(
+                            children: [
+                              Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: nameController,
+                                    cursorColor: Colors.white,
+                                    style: const TextStyle(
                                         fontSize: 20.0, color: Colors.white),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.white)),
-                                    errorStyle:
-                                    TextStyle(color: Colors.redAccent,
-                                        fontSize: 15.0),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter Name";
-                                    }
-                                    return null;
-                                  },
-                                )
-                            ),
-                            Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 10.0),
-                                child: TextFormField(
-                                  autofocus: false,
-                                  controller: mobilenoController,
-                                  keyboardType: TextInputType.number,
-                                  cursorColor: Colors.white,
-                                  style: const TextStyle(
-                                      fontSize: 20.0, color: Colors.white),
-                                  onChanged: (value) => mobilenoController.text = value,
-                                  decoration: const InputDecoration(
-                                    labelText: "Mobile No.",
-                                    labelStyle: TextStyle(
+                                    onChanged: (value) => nameController.text = value,
+                                    decoration: const InputDecoration(
+                                      labelText: "Name",
+                                      labelStyle: TextStyle(
+                                          fontSize: 20.0, color: Colors.white),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white)),
+                                      errorStyle:
+                                      TextStyle(color: Colors.redAccent,
+                                          fontSize: 15.0),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter Name";
+                                      }
+                                      return null;
+                                    },
+                                  )
+                              ),
+                              Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: mobilenoController,
+                                    keyboardType: TextInputType.number,
+                                    cursorColor: Colors.white,
+                                    style: const TextStyle(
                                         fontSize: 20.0, color: Colors.white),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.white,)),
-                                    errorStyle:
-                                    TextStyle(color: Colors.redAccent,
-                                        fontSize: 15.0),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter Number";
-                                    }
-                                    else
-                                    if (!RegExp(r'^(?:[+0][1-9])?[0-9]{10,12}$')
-                                        .hasMatch(value)) {
-                                      return "Please Enter Valid Number";
-                                    }
-                                    return null;
-                                  },
-                                )
-                            ),
-                            Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 10.0),
-                                child: TextFormField(
-                                  autofocus: false,
-                                  controller: emailController,
-                                  cursorColor: Colors.white,
-                                  style: const TextStyle(
-                                      fontSize: 20.0, color: Colors.white),
-                                  onChanged: (value) => emailController.text = value,
-                                  decoration: const InputDecoration(
-                                    labelText: "Email",
-                                    labelStyle: TextStyle(
+                                    onChanged: (value) => mobilenoController.text = value,
+                                    decoration: const InputDecoration(
+                                      labelText: "Mobile No.",
+                                      labelStyle: TextStyle(
+                                          fontSize: 20.0, color: Colors.white),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.white,)),
+                                      errorStyle:
+                                      TextStyle(color: Colors.redAccent,
+                                          fontSize: 15.0),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter Number";
+                                      }
+                                      else
+                                      if (!RegExp(r'^(?:[+0][1-9])?[0-9]{10,12}$')
+                                          .hasMatch(value)) {
+                                        return "Please Enter Valid Number";
+                                      }
+                                      return null;
+                                    },
+                                  )
+                              ),
+                              Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: emailController,
+                                    cursorColor: Colors.white,
+                                    style: const TextStyle(
                                         fontSize: 20.0, color: Colors.white),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.white)),
-                                    errorStyle:
-                                    TextStyle(color: Colors.redAccent,
-                                        fontSize: 15.0),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter Email";
-                                    }
-                                    else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                                      return
+                                    onChanged: (value) => emailController.text = value,
+                                    decoration: const InputDecoration(
+                                      labelText: "Email",
+                                      labelStyle: TextStyle(
+                                          fontSize: 20.0, color: Colors.white),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white)),
+                                      errorStyle:
+                                      TextStyle(color: Colors.redAccent,
+                                          fontSize: 15.0),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter Email";
+                                      }
+                                      else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                        return
 
-                                        'Please enter a valid email address';
-                                    }
-                                    return null;
-                                  },
-                                )
-                            ),
+                                          'Please enter a valid email address';
+                                      }
+                                      return null;
+                                    },
+                                  )
+                              ),
 
-                            Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 10.0),
-                                child: TextFormField(
-                                  autofocus: false,
-                                  controller: addressController,
-                                  cursorColor: Colors.white,
-                                  style: const TextStyle(
-                                      fontSize: 20.0, color: Colors.white),
-                                  onChanged: (value) => addressController.text = value,
-                                  decoration: const InputDecoration(
-                                    labelText: "Address",
-                                    labelStyle: TextStyle(
+                              Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: TextFormField(
+                                    autofocus: false,
+                                    controller: addressController,
+                                    cursorColor: Colors.white,
+                                    style: const TextStyle(
                                         fontSize: 20.0, color: Colors.white),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.white)),
-                                    errorStyle:
-                                    TextStyle(color: Colors.redAccent,
-                                        fontSize: 15.0),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please Enter Address";
-                                    }
-                                    return null;
-                                  },
-                                )
-                            ),
+                                    onChanged: (value) => addressController.text = value,
+                                    decoration: const InputDecoration(
+                                      labelText: "Address",
+                                      labelStyle: TextStyle(
+                                          fontSize: 20.0, color: Colors.white),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.white)),
+                                      errorStyle:
+                                      TextStyle(color: Colors.redAccent,
+                                          fontSize: 15.0),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "Please Enter Address";
+                                      }
+                                      return null;
+                                    },
+                                  )
+                              ),
 
 
-                  SizedBox(
-                    width: 300,
-                    height:50,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        updateUserProfile();
-                      },
-                      style: ElevatedButton.styleFrom(
-                          primary: Colors.deepOrange,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100),
+                              SizedBox(
+                                  width: 300,
+                                  height:50,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      updateUserProfile();
+                                      Navigator.pushReplacement(context,
+                                          MaterialPageRoute(builder: (context) => ProfilePage()));
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.deepOrange,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100),
 
-                          )),
-                      child: const Text('Update Profile',style: TextStyle(fontSize: 20,color: Colors.white),
+                                        )),
+                                    child: const Text('Update Profile',style: TextStyle(fontSize: 20,color: Colors.white),
+                                    ),
+                                  ))
+                            ]
+                        )
+
+
                     ),
-                  ))
-    ]
-    )
-
-
                   ),
-                ),
-              )
-    )
-          );
+                )
+            )
+        ));
   }
 }
