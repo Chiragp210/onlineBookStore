@@ -36,13 +36,30 @@ class _CustomerListPageState extends State<CustomerListPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
+    return SafeArea(
+        top: false,
+        child: Scaffold(
+          extendBody: true,
+          appBar: AppBar(
             title: const Text("Customer List",
                 style: TextStyle(color: Colors.white, fontSize: 20)),
-            backgroundColor: Colors.deepOrange),
-        body: Center(
-            child: Container(
+            backgroundColor: Colors.deepOrange,
+            actions: [IconButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
+                        (route) => false,
+                  );
+                },
+                icon: const Icon(
+                  Icons.logout,
+                  size: 30,
+                )),],
+          ),
+          body: Center(
+              child: Container(
                 width: double.infinity,
                 height: double.infinity,
                 decoration: const BoxDecoration(
@@ -50,83 +67,79 @@ class _CustomerListPageState extends State<CustomerListPage> {
                         image: AssetImage("assets/Images/img2.png"),
                         fit: BoxFit.cover)),
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('Customer').snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    }
+                    stream: FirebaseFirestore.instance.collection('Customer').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
 
-                    return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                          var userData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                          var userid = snapshot.data!.docs[index].id;
-                          var name = userData['Name'] ?? '';
-                          var email = userData['Email'] ?? '';
-                          var mobileNo = userData['MobileNo'] ?? '';
-                          var address = userData['Address'] ?? '';
+                      return ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            var userData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                            var userid = snapshot.data!.docs[index].id;
+                            var name = userData['Name'] ?? '';
+                            var email = userData['Email'] ?? '';
+                            var mobileNo = userData['MobileNo'] ?? '';
+                            var address = userData['Address'] ?? '';
 
-                          return Card(
-                            margin: const EdgeInsets.all(8),
-                            elevation: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListTile(
-                                    title: Text(
-                                      'Name: $name',
-                                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.indigo),
+                            return Card(
+                              margin: const EdgeInsets.all(8),
+                              elevation: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ListTile(
+                                      title: Text(
+                                        'Name: $name',
+                                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.indigo),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Email: $email',
+                                            style: const TextStyle(fontSize: 16, color: Colors.black),
+                                          ),
+                                          Text(
+                                            'Phone No: $mobileNo',
+                                            style: const TextStyle(fontSize: 16, color: Colors.black),
+                                          ),
+                                          Text(
+                                            'Address: $address',
+                                            style: const TextStyle(fontSize: 16, color: Colors.black),
+                                          ),
+
+                                        ],
+                                      ),
+                                      trailing: const Icon(Icons.person, color: Colors.indigo, size: 30),
                                     ),
-                                    subtitle: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(
-                                          'Email: $email',
-                                          style: const TextStyle(fontSize: 16, color: Colors.black),
-                                        ),
-                                        Text(
-                                          'Phone No: $mobileNo',
-                                          style: const TextStyle(fontSize: 16, color: Colors.black),
-                                        ),
-                                        Text(
-                                          'Address: $address',
-                                          style: const TextStyle(fontSize: 16, color: Colors.black),
-                                        ),
 
+                                        IconButton(
+                                          icon: const Icon(Icons.delete, color: Colors.red),
+                                          onPressed: () => _deletebook(userid),
+                                        ),
                                       ],
                                     ),
-                                    trailing: const Icon(Icons.person, color: Colors.indigo, size: 30),
-                                  ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-
-                                      IconButton(
-                                        icon: const Icon(Icons.delete, color: Colors.red),
-                                        onPressed: () => _deletebook(userid),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        }
-                    );
-                  }
+                            );
+                          }
+                      );
+                    }
                 ),
-            )
-        ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: signout,
-        backgroundColor: Colors.red, // Function to handle FAB tap
-        child: const Icon(Icons.home),
-      ),
-    );
+              )
+          ),
+
+        ));
   }
 }
