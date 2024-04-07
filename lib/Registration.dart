@@ -41,32 +41,32 @@ class _RegitrationPageState extends State<RegitrationPage> {
   }
 
   CollectionReference customers =
-      FirebaseFirestore.instance.collection('Customer');
+  FirebaseFirestore.instance.collection('Customer');
   Future<void> addUser() {
     return customers
         .add({
-          'Name': name,
-          'MobileNo': mobile,
-          'Email': email,
-          'Address': address,
-          'Password': password
-        })
+      'Name': name,
+      'MobileNo': mobile,
+      'Email': email,
+      'Address': address,
+      'Password': password
+    })
         .then((value) => Fluttertoast.showToast(
-            msg: "Add User",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0))
+        msg: "Add User",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0))
         .catchError((error) => Fluttertoast.showToast(
-            msg: "Faild to Add User:$error",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0));
+        msg: "Faild to Add User:$error",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0));
   }
 
   @override
@@ -77,7 +77,7 @@ class _RegitrationPageState extends State<RegitrationPage> {
             height: double.infinity,
             decoration: const BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage("assets/Images/img.png"),
+                    image: AssetImage("assets/Images/img2.png"),
                     fit: BoxFit.cover)),
             child: Form(
                 key: _formKey,

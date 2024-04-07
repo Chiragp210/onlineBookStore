@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 This project name is online book store system (Readify Hub).
 This project is basically of user can purchase the books.
 In this application user can 1st registration them self. After he/she can login into the app. Also add the factures of reset the password.
@@ -16,3 +17,10 @@ This Project has 2 roles
     - In this application user can payment 2 types 1st is COD and 2nd is Gpay.
     - User can track the orders.
     - User also can see profile and update the profile.
+=======
+This Project has 2 roles 
+  1. Admin
+    - 
+
+  2. User
+>>>>>>> 9abb612 (finished Project)

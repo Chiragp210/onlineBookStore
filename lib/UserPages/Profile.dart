@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:onlinebookstore/UserPages/ProfileUpdate.dart';
 import 'package:onlinebookstore/UserPages/UserHome.dart';
 
+import '../Login.dart';
+
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -39,161 +41,133 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) => FutureBuilder<Customer?>(
-        future: getUserData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final user = snapshot.data!;
-            return Scaffold(
-              appBar: AppBar(
-                  title: const Text("User Profile",
-                      style: TextStyle(color: Colors.white, fontSize: 20)),
-                  backgroundColor: Colors.deepOrange),
-              body: Center(
-                child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage("assets/Images/img2.png"),
-                            fit: BoxFit.cover)),
-                    child: isLoading
-                        ? const Center(
-                      child: CircularProgressIndicator(), // Show a loading indicator
-                    )
-                        :Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            margin: const EdgeInsets.only(top: 60, bottom: 25),
-                            decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.white, width: 2),
-                                shape: BoxShape.circle),
-                            child: const Icon(Icons.person,
-                                color: Colors.white, size: 120),
-                          ),
-                          const SizedBox(height: 25.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'Name: ',
-                                style: TextStyle(
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                              Text(
-                                user.Name!,
-                                style: const TextStyle(
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 25.0),
-                          // Display user email
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'Email: ',
-                                style: TextStyle(
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                              Text(
-                                user!.Email,
-                                style: const TextStyle(
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 25.0),
-                          // Display additional user details
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'Phone Number: ',
-                                style: TextStyle(
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                              Text(
-                                user!.MobileNo,
-                                style: const TextStyle(
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 25.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'Address: ',
-                                style: TextStyle(
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                              Text(
-                                user!.Address,
-                                style: const TextStyle(
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 25.0),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            margin: const EdgeInsets.only(top: 25, bottom: 25),
-                            child: IconButton(
-                                onPressed: () {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ProfileUpdatePage()));
-                                },
-
-                                icon: const Icon(Icons.edit,color: Colors.deepOrange,size: 25),
-
-
-                                ),
-                          )
-                        ],
-                      ),
-                    )),
-              ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: (){
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> UserHomePage()));
+    future: getUserData(),
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        final user = snapshot.data!;
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("User Profile",
+                style: TextStyle(color: Colors.white, fontSize: 20)),
+            backgroundColor: Colors.deepOrange,
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
+                        (route) => false,
+                  );
                 },
-                backgroundColor: Colors.red, // Function to handle FAB tap
-                child: const Icon(Icons.home),
+                icon: const Icon(
+                  Icons.logout,
+                  size: 30,
+                ),
               ),
-            );
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            return const CircularProgressIndicator();
-          }
-        },
-      );
+            ],
+          ),
+          body: Center(
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("assets/Images/img2.png"),
+                      fit: BoxFit.cover)),
+              child: isLoading
+                  ? const Center(
+                child: CircularProgressIndicator(), // Show a loading indicator
+              )
+                  : Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.only(top: 60, bottom: 25),
+                        decoration: BoxDecoration(
+                            border:
+                            Border.all(color: Colors.white, width: 2),
+                            shape: BoxShape.circle),
+                        child: const Icon(Icons.person,
+                            color: Colors.white, size: 120),
+                      ),
+                      const SizedBox(height: 25.0),
+                      buildInfoCard("Name:", user.Name!, Icons.person),
+                      const SizedBox(height: 25.0),
+                      buildInfoCard("Email:", user.Email, Icons.email),
+                      const SizedBox(height: 25.0),
+                      buildInfoCard("Phone Number:", user.MobileNo, Icons.phone),
+                      const SizedBox(height: 25.0),
+                      buildInfoCard("Address:", user.Address, Icons.location_on),
+                      const SizedBox(height: 25.0),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.only(top: 25, bottom: 25),
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ProfileUpdatePage()));
+                          },
+                          icon: const Icon(Icons.edit,color: Colors.deepOrange,size: 25),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      } else if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}');
+      } else {
+        return const CircularProgressIndicator();
+      }
+    },
+  );
+
+  Widget buildInfoCard(String label, String value, IconData icon) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: Colors.black,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class Customer {

@@ -104,131 +104,146 @@ class _BookListPageState extends State<BookListPage> {
 
       });
     }
-    return Scaffold(
-        appBar: AppBar(
+    return SafeArea(
+        top: false,
+        child:Scaffold(
+          extendBody: true,
+          appBar: AppBar(
             title: const Text("Book List",
                 style: TextStyle(color: Colors.white, fontSize: 20)),
-            backgroundColor: Colors.deepOrange),
-        body: Center(
-            child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/Images/img.png"),
-                        fit: BoxFit.cover)),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _searchController,
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Search...',
-                          hintStyle: TextStyle(color: Colors.white),
+            backgroundColor: Colors.deepOrange,
+            actions: [IconButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
+                        (route) => false,
+                  );
+                },
+                icon: const Icon(
+                  Icons.logout,
+                  size: 30,
+                )),],
+          ),
+          body: Center(
+              child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/Images/img.png"),
+                          fit: BoxFit.cover)),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _searchController,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'Search...',
+                            hintStyle: TextStyle(color: Colors.white),
 
-                          prefixIcon: Icon(Icons.search, color: Colors.white),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(),
+                            prefixIcon: Icon(Icons.search, color: Colors.white),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: BorderSide(),
+                            ),
                           ),
+                          onChanged: (query) {
+                            setState(() {
+                              _searchQuery = query;
+                            });
+                          },
                         ),
-                        onChanged: (query) {
-                          setState(() {
-                            _searchQuery = query;
-                          });
-                        },
                       ),
-                    ),
-                    const SizedBox(height: 20,),
-                    Expanded(
-                      child:StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance.collection('bookInfo').snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
-                          if (snapshot.hasError) {
-                            return Center(child: Text('Error: ${snapshot.error}'));
-                          }
+                      const SizedBox(height: 20,),
+                      Expanded(
+                        child:StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection('bookInfo').snapshots(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            if (snapshot.hasError) {
+                              return Center(child: Text('Error: ${snapshot.error}'));
+                            }
 
-                          return ListView.builder(
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) {
-                              var bookData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                              var bookId = snapshot.data!.docs[index].id;
-                              var bookImage = bookData['imageLink'] ?? '';
-                              var bookTitle = bookData['Title'] ?? '';
-                              var bookAuth = bookData['AuthName'] ?? '';
-                              var bookIsbn = bookData['ISBN'] ?? '';
-                              var bookGenre = bookData['Genre'] ?? '';
-                              var bookPrice = bookData['Price'] ?? '';
+                            return ListView.builder(
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                var bookData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                                var bookId = snapshot.data!.docs[index].id;
+                                var bookImage = bookData['imageLink'] ?? '';
+                                var bookTitle = bookData['Title'] ?? '';
+                                var bookAuth = bookData['AuthName'] ?? '';
+                                var bookIsbn = bookData['ISBN'] ?? '';
+                                var bookGenre = bookData['Genre'] ?? '';
+                                var bookPrice = bookData['Price'] ?? '';
+                                var bookDesc = bookData['Desc'] ?? '';
 
-                              return Card(
-                                margin: const EdgeInsets.all(8),
-                                elevation: 2,
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.all(16),
-                                  leading: Image.network(
-                                    bookImage,
-                                    width: 100,
-                                    height: 100,
-                                  ),
-                                  title: Text(
-                                    'Title: $bookTitle',
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  ),
-                                  subtitle:  Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Author: $bookAuth',
-                                          style: const TextStyle(fontSize: 16,),
-                                        ),
-                                        Text(
-                                          'Generation: $bookGenre',
-                                          style: const TextStyle(fontSize: 16,),
-                                        ),
-                                        Text(
-                                          'ISBN: $bookIsbn',
-                                          style: const TextStyle(fontSize: 16,),
-                                        ),
-                                        Text(
-                                          'Price: \₹$bookPrice',
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            IconButton(
-                                              icon: const Icon(Icons.edit, color: Colors.blue),
-                                              onPressed: () => _editbook(bookId),
-                                            ),
-                                            IconButton(
-                                              icon: const Icon(Icons.delete, color: Colors.red),
-                                              onPressed: () => _deletebook(bookId),
-                                            ),
-                                          ],
-                                        ),
-                                      ]
-                                  ),
+                                return Card(
+                                  margin: const EdgeInsets.all(8),
+                                  elevation: 2,
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.all(16),
+                                    leading: Image.network(
+                                      bookImage,
+                                      width: 100,
+                                      height: 100,
+                                    ),
+                                    title: Text(
+                                      'Title: $bookTitle',
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                    subtitle:  Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Author: $bookAuth',
+                                            style: const TextStyle(fontSize: 16,),
+                                          ),
+                                          Text(
+                                            'Generation: $bookGenre',
+                                            style: const TextStyle(fontSize: 16,),
+                                          ),
+                                          Text(
+                                            'ISBN: $bookIsbn',
+                                            style: const TextStyle(fontSize: 16,),
+                                          ),
+                                          Text(
+                                            'Price: \₹$bookPrice',
+                                            style: const TextStyle(fontSize: 16),
+                                          ),
 
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),)
-                  ],
-                )
-            )
-        ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: signout,
-        backgroundColor: Colors.red, // Function to handle FAB tap
-        child: const Icon(Icons.home),
-      ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              IconButton(
+                                                icon: const Icon(Icons.edit, color: Colors.blue),
+                                                onPressed: () => _editbook(bookId),
+                                              ),
+                                              IconButton(
+                                                icon: const Icon(Icons.delete, color: Colors.red),
+                                                onPressed: () => _deletebook(bookId),
+                                              ),
+                                            ],
+                                          ),
+                                        ]
+                                    ),
+
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),)
+                    ],
+                  )
+              )
+          ),
+        )
     );
   }
 }
@@ -248,6 +263,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
   TextEditingController _bookPriceController = TextEditingController();
   TextEditingController _bookIsbnController = TextEditingController();
   TextEditingController _bookGenreController = TextEditingController();
+  TextEditingController _bookDescController = TextEditingController();
   bool isLoading = true;
 
   @override
@@ -270,6 +286,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
         _bookPriceController.text = bookData['Price'].toString() ?? '';
         _bookIsbnController.text = bookData['ISBN'] ?? '';
         _bookGenreController.text = bookData['Gerne'] ?? '';
+        _bookDescController.text = bookData['Desc'] ?? '';
         isLoading = false;
       });
     } catch (error) {
@@ -285,6 +302,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
         'Price': double.parse(_bookPriceController.text),
         'ISBN': _bookIsbnController.text,
         'Gerne': _bookGenreController.text,
+        'Desc': _bookDescController.text
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -307,142 +325,165 @@ class _EditBookScreenState extends State<EditBookScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Update Book", style: TextStyle(color: Colors.white, fontSize: 20)),
-        backgroundColor: Colors.deepOrange,
-      ),
-      body: Center(
-      child: Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: const BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("assets/Images/img.png"),
-              fit: BoxFit.cover)),
-      child: Padding(
-        padding: const EdgeInsets.all(3.0),
-        child: ListView(
-          children: [
-            Container(
-                margin: const EdgeInsets.symmetric(
-                    vertical: 10.0),
-                child:TextField(
-                  controller: _bookNameController,
-                  style: const TextStyle(fontSize: 16,color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Book Title",
-                    labelStyle: TextStyle(
-                        fontSize: 15.0, color: Colors.white),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.white)),
-                    errorStyle:
-                    TextStyle(color: Colors.redAccent,
-                        fontSize: 15.0),
-                  ),
-                ),
-            ),
-            Container(
-                margin: const EdgeInsets.symmetric(
-                    vertical: 10.0),
-                child: TextField(
-                  controller: _bookAuthNameController,
-                  style: const TextStyle(fontSize: 16,color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Book Auth Name",
-                    labelStyle: TextStyle(
-                        fontSize: 15.0, color: Colors.white),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.white)),
-                    errorStyle:
-                    TextStyle(color: Colors.redAccent,
-                        fontSize: 15.0),
 
-                  ),
+    return SafeArea(
+        top: false,
+        child: Scaffold(
+            extendBody: true,
+            appBar: AppBar(
+              title: const Text("Update Book", style: TextStyle(color: Colors.white, fontSize: 20)),
+              backgroundColor: Colors.deepOrange,
+            ),
+            body: Center(
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/Images/img.png"),
+                          fit: BoxFit.cover)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: ListView(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0),
+                          child:TextField(
+                            controller: _bookNameController,
+                            style: const TextStyle(fontSize: 16,color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: "Book Title",
+                              labelStyle: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white)),
+                              errorStyle:
+                              TextStyle(color: Colors.redAccent,
+                                  fontSize: 15.0),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0),
+                          child: TextField(
+                            controller: _bookAuthNameController,
+                            style: const TextStyle(fontSize: 16,color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: "Book Auth Name",
+                              labelStyle: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white)),
+                              errorStyle:
+                              TextStyle(color: Colors.redAccent,
+                                  fontSize: 15.0),
 
-                ),
-            ),
-            Container(
-                margin: const EdgeInsets.symmetric(
-                    vertical: 10.0),
-                child:TextField(
-                  controller: _bookIsbnController,
-                  style: const TextStyle(fontSize: 16,color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Book ISBN",
-                    labelStyle: TextStyle(
-                        fontSize: 15.0, color: Colors.white),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.white)),
-                    errorStyle:
-                    TextStyle(color: Colors.redAccent,
-                        fontSize: 15.0),
-                  ),
-                ),
-            ),
-            Container(
-                margin: const EdgeInsets.symmetric(
-                    vertical: 10.0),
-                child:TextField(
-                  controller: _bookGenreController,
-                  style: const TextStyle(fontSize: 16,color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Book Generation",
-                    labelStyle: TextStyle(
-                        fontSize: 15.0, color: Colors.white),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.white)),
-                    errorStyle:
-                    TextStyle(color: Colors.redAccent,
-                        fontSize: 15.0),
-                  ),
-                ),
-            ),
-            Container(
-                margin: const EdgeInsets.symmetric(
-                    vertical: 10.0),
-                child:
-                TextField(
-                  controller: _bookPriceController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  style: const TextStyle(fontSize: 16,color: Colors.white),
-                  decoration: const InputDecoration(
-                    labelText: "Price",
-                    labelStyle: TextStyle(
-                        fontSize: 15.0, color: Colors.white),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.white)),
-                    errorStyle:
-                    TextStyle(color: Colors.redAccent,
-                        fontSize: 15.0),
-                  ),
-                ),
-            ),
-            Container(
-                margin: const EdgeInsets.symmetric(
-                    vertical: 10.0),
-                child: ElevatedButton(
-                    onPressed: _updateBook,
-                    style: ElevatedButton.styleFrom(
-                        primary: Colors.deepOrange,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100),
+                            ),
 
-                        )),
-                    child:  const Center(child: Text('Update Book',style: TextStyle(fontSize: 20,color: Colors.white)),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0),
+                          child:TextField(
+                            controller: _bookIsbnController,
+                            style: const TextStyle(fontSize: 16,color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: "Book ISBN",
+                              labelStyle: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white)),
+                              errorStyle:
+                              TextStyle(color: Colors.redAccent,
+                                  fontSize: 15.0),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0),
+                          child:TextField(
+                            controller: _bookGenreController,
+                            style: const TextStyle(fontSize: 16,color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: "Book Generation",
+                              labelStyle: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white)),
+                              errorStyle:
+                              TextStyle(color: Colors.redAccent,
+                                  fontSize: 15.0),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0),
+                          child:
+                          TextField(
+                            controller: _bookPriceController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(fontSize: 16,color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: "Price",
+                              labelStyle: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white)),
+                              errorStyle:
+                              TextStyle(color: Colors.redAccent,
+                                  fontSize: 15.0),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0),
+                          child:TextField(
+                            controller: _bookDescController,
+                            style: const TextStyle(fontSize: 16,color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: "Book Description",
+                              labelStyle: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.white)),
+                              errorStyle:
+                              TextStyle(color: Colors.redAccent,
+                                  fontSize: 15.0),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10.0),
+                          child: ElevatedButton(
+                              onPressed: _updateBook,
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepOrange,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100),
+
+                                  )),
+                              child:  const Center(child: Text('Update Book',style: TextStyle(fontSize: 20,color: Colors.white)),
 
 
-                    )),
-            ),
-          ],
-        ),
-      ),
-    )
-      )
-    );
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+            )
+        ));
   }
 }

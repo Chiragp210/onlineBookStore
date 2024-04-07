@@ -81,10 +81,7 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
                         height: 100,
                         width: 100,
                         color: Colors.blue.shade900,
-                        child: const Icon(
-                          Icons.payment,
-                          size: 60,
-                          color: Colors.white,
+                        child:  Image.asset('assets/Images/image_1.png'
                         ),
                       ),
                       Text(app.name),
@@ -139,9 +136,9 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
           Text("$title: ", style: header),
           Flexible(
               child: Text(
-            body,
-            style: value,
-          )),
+                body,
+                style: value,
+              )),
         ],
       ),
     );
