@@ -6,8 +6,12 @@ void main()async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(apiKey: "AIzaSyD1JEWAz-0FY16GV87br2__T05l9jOv3q4", appId: "1:194230267892:android:6d1328a8ac7e6ec9d013a1",
-        messagingSenderId: "194230267892", projectId: "booksstore-60665",storageBucket: "gs://booksstore-60665.appspot.com",databaseURL: "https://booksstore-60665-default-rtdb.firebaseio.com",)
+      options: FirebaseOptions(apiKey: "AIzaSyD1JEWAz-0FY16GV87br2__T05l9jOv3q4",
+        appId: "1:194230267892:android:6d1328a8ac7e6ec9d013a1",
+        messagingSenderId: "194230267892",
+        projectId: "booksstore-60665",
+        storageBucket: "gs://booksstore-60665.appspot.com",
+        databaseURL: "https://booksstore-60665-default-rtdb.firebaseio.com",)
   );
   runApp(const MyApp());
 }
@@ -18,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Readify Hub',
       theme: ThemeData(
         // This is the theme of your application.
         //
